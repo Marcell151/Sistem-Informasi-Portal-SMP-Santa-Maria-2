@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * PORTAL TERPADU - App Launchpad (SSO)
+ * Lokasi: C:\xampp\htdocs\portal_sekolah\launchpad.php
+ * FIXED: Masalah penamaan folder untuk SuperAdmin agar diarahkan ke folder 'admin'
+ */
 session_start();
 
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) { 
@@ -77,8 +81,8 @@ if (!$cek_ta) {
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-[#000080] rounded flex items-center justify-center text-white font-bold shadow-md">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <img src="sitapsi/assets/img/logo.png" alt="Logo Santa Maria" class="w-full h-full object-contain">
                 </div>
                 <span class="font-extrabold text-slate-800 tracking-tight">Portal Terpadu</span>
                 <span class="ml-2 px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-500 rounded text-[10px] font-bold uppercase hidden sm:inline">Hak Akses: <?= $role ?></span>
@@ -170,42 +174,6 @@ if (!$cek_ta) {
                     <h3 class="text-xl font-extrabold text-slate-800 mb-2">SI-Ekstra</h3>
                     <p class="text-sm text-slate-500 font-medium flex-1">Manajemen nilai dan kegiatan bakat minat siswa.</p>
                     <div class="mt-6 flex items-center text-amber-600 font-bold text-sm">
-                        Buka Modul <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
-                    </div>
-                </a>
-
-                <a href="#" onclick="alert('Modul Perpustakaan (SLiMS) masih dalam tahap integrasi.')" class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-violet-500 transition-all group relative overflow-hidden flex flex-col h-full opacity-90">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-violet-50 rounded-full transform translate-x-10 -translate-y-10 group-hover:scale-150 transition-transform duration-500 -z-10"></div>
-                    <div class="w-14 h-14 bg-violet-500 text-white rounded-2xl flex items-center justify-center mb-6 shadow-md shadow-violet-900/20 group-hover:scale-110 transition-transform">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-extrabold text-slate-800 mb-2">E-Perpustakaan</h3>
-                    <p class="text-sm text-slate-500 font-medium flex-1">Manajemen peminjaman buku dan keanggotaan (SLiMS).</p>
-                    <div class="mt-6 flex items-center text-violet-600 font-bold text-sm">
-                        Buka Modul <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
-                    </div>
-                </a>
-
-                <a href="#" onclick="alert('Modul Inventaris Lab masih dalam tahap pengembangan.')" class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-cyan-500 transition-all group relative overflow-hidden flex flex-col h-full opacity-90">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-50 rounded-full transform translate-x-10 -translate-y-10 group-hover:scale-150 transition-transform duration-500 -z-10"></div>
-                    <div class="w-14 h-14 bg-cyan-500 text-white rounded-2xl flex items-center justify-center mb-6 shadow-md shadow-cyan-900/20 group-hover:scale-110 transition-transform">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                    </div>
-                    <h3 class="text-xl font-extrabold text-slate-800 mb-2">Inventaris Lab</h3>
-                    <p class="text-sm text-slate-500 font-medium flex-1">Pengelolaan aset dan barang laboratorium komputer/IPA.</p>
-                    <div class="mt-6 flex items-center text-cyan-600 font-bold text-sm">
-                        Buka Modul <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
-                    </div>
-                </a>
-
-                <a href="#" onclick="alert('Modul Inventaris Non-Lab masih dalam tahap pengembangan.')" class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-rose-500 transition-all group relative overflow-hidden flex flex-col h-full opacity-90">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-rose-50 rounded-full transform translate-x-10 -translate-y-10 group-hover:scale-150 transition-transform duration-500 -z-10"></div>
-                    <div class="w-14 h-14 bg-rose-500 text-white rounded-2xl flex items-center justify-center mb-6 shadow-md shadow-rose-900/20 group-hover:scale-110 transition-transform">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
-                    </div>
-                    <h3 class="text-xl font-extrabold text-slate-800 mb-2">Inventaris Umum</h3>
-                    <p class="text-sm text-slate-500 font-medium flex-1">Pengelolaan aset sekolah dan sarana prasarana umum.</p>
-                    <div class="mt-6 flex items-center text-rose-600 font-bold text-sm">
                         Buka Modul <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
                     </div>
                 </a>
