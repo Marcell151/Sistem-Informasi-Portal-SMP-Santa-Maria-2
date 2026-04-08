@@ -1,7 +1,7 @@
 <?php
 /**
  * SITAPSI - Tambah Siswa Manual
- * PENYESUAIAN: Penambahan tangkapan data id_ortu
+ * PENYESUAIAN: Menyimpan id_ortu untuk relasi ke akun Wali Murid (Pengganti NIK)
  */
 
 session_start();
@@ -20,16 +20,19 @@ try {
     
     // Ambil tahun ajaran aktif
     $tahun_aktif = fetchOne("SELECT id_tahun FROM tb_tahun_ajaran WHERE status = 'Aktif' LIMIT 1");
+    if (!$tahun_aktif) {
+        throw new Exception("Tidak ada Tahun Ajaran yang aktif!");
+    }
     
     $no_induk = trim($_POST['no_induk']);
     $nama_siswa = trim($_POST['nama_siswa']);
     $jenis_kelamin = $_POST['jenis_kelamin'];
     $id_kelas = $_POST['id_kelas'];
-    $nama_ayah = trim($_POST['nama_ayah']);
-    $nama_ibu = trim($_POST['nama_ibu']);
-    $no_hp_ortu = trim($_POST['no_hp_ortu']);
+    $nama_ayah = trim($_POST['nama_ayah'] ?? '');
+    $nama_ibu = trim($_POST['nama_ibu'] ?? '');
+    $no_hp_ortu = trim($_POST['no_hp_ortu'] ?? '');
     
-    // [BARU] Tangkap id_ortu dari form, set null jika tidak dipilih
+    // Tangkap id_ortu dari form, set null jika tidak dipilih
     $id_ortu = !empty($_POST['id_ortu']) ? $_POST['id_ortu'] : null;
     
     // Validasi
@@ -45,7 +48,7 @@ try {
     
     $pdo->beginTransaction();
     
-    // Insert siswa (Ditambahkan kolom id_ortu)
+    // Insert siswa (Dengan id_ortu)
     executeQuery("
         INSERT INTO tb_siswa (no_induk, nama_siswa, jenis_kelamin, nama_ayah, nama_ibu, no_hp_ortu, id_ortu, status_aktif)
         VALUES (:no_induk, :nama_siswa, :jk, :nama_ayah, :nama_ibu, :no_hp_ortu, :id_ortu, 'Aktif')
@@ -56,7 +59,7 @@ try {
         'nama_ayah' => $nama_ayah,
         'nama_ibu' => $nama_ibu,
         'no_hp_ortu' => $no_hp_ortu,
-        'id_ortu' => $id_ortu // <--- Variabel id_ortu masuk ke sini
+        'id_ortu' => $id_ortu
     ]);
     
     // Insert anggota kelas

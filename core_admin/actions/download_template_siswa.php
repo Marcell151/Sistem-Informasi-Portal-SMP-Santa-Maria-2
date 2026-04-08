@@ -2,7 +2,7 @@
 /**
  * SITAPSI - Download Template CSV Import Siswa
  * PURE PHP - Pemisah menggunakan KOMA (,) agar langsung terpotong di Excel English/US
- * PENYESUAIAN: Penambahan Kolom NIK Orang Tua untuk Autocreate Akun
+ * PENYESUAIAN: Perubahan NIK Orang Tua menjadi Username Wali
  */
 
 session_start();
@@ -23,23 +23,22 @@ $output = fopen('php://output', 'w');
 // 2. MAGIC TRICK: Tambahkan BOM agar Microsoft Excel membaca file ini dengan rapi
 fputs($output, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
 
-// 3. SET JUDUL KOLOM (HEADER) - Standar Dapodik + NIK
+// 3. SET JUDUL KOLOM (HEADER) - [PENYESUAIAN] NIK diubah jadi Username
 $headers = [
     'No Induk', 'Nama Peserta Didik', 'L/P', 'Tempat Lahir', 'Tanggal Lahir',
     'Alamat Jalan', 'Nama Ayah', 'Pekerjaan Ayah', 'Nama Ibu', 'Pekerjaan Ibu',
-    'No HP', 'NIK Orang Tua', 'Kelas' // <--- NIK Orang Tua Ditambahkan Sebelum Kelas
+    'No HP', 'Username Wali', 'Kelas' 
 ];
-// KITA UBAH MENJADI KOMA (,)
 fputcsv($output, $headers, ',');
 
 
 // 4. SET CONTOH DATA SEBAGAI PANDUAN TU
+// Jika Username dikosongi, sistem akan otomatis membuatkan akun wali murid baru berdasarkan No HP
 $contoh_data = [
     '2025001', 'Ahmad Dani', 'L', 'Malang', '2010-05-15',
     'Jl. Merdeka No. 1, Malang', 'Budi Santoso', 'Wiraswasta', 'Siti Aminah', 'Ibu Rumah Tangga',
-    '081234567890', '3573012345678901', 'VII A' // <--- Contoh NIK Ditambahkan
+    '081234567890', '', 'VII A' 
 ];
-// KITA UBAH MENJADI KOMA (,)
 fputcsv($output, $contoh_data, ',');
 
 fclose($output);

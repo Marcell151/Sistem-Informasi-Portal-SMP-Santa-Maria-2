@@ -1,54 +1,51 @@
 <?php
 
-
 session_start();
 require_once '../../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // Ambil input dan bersihkan
-    $nik = trim($_POST['nik'] ?? '');
+    // Ambil input dan bersihkan (Diubah dari nik ke username)
+    $username = trim($_POST['username'] ?? '');
     $password_raw = $_POST['password'] ?? '';
     $remember_me = isset($_POST['remember_me']); // Tangkap status Checkbox Ingat Saya
     
-    if (empty($nik) || empty($password_raw)) {
-        $_SESSION['error_message'] = "⚠️ NIK dan Password tidak boleh kosong.";
+    if (empty($username) || empty($password_raw)) {
+        $_SESSION['error_message'] = "⚠️ Username dan Password tidak boleh kosong.";
         header("Location: ../login.php");
         exit;
     }
 
     try {
-        // Enkripsi inputan password menggunakan MD5 (karena di dummy DB pakai MD5 'e10adc39...')
+        // Enkripsi inputan password menggunakan MD5
         $password_hashed = md5($password_raw);
 
-        // Cek data di tabel tb_orang_tua
-        $ortu = fetchOne("SELECT * FROM tb_orang_tua WHERE nik_ortu = :nik AND password = :pass LIMIT 1", [
-            'nik' => $nik,
+        // Cek data di tabel tb_orang_tua (Gunakan username)
+        $ortu = fetchOne("SELECT * FROM tb_orang_tua WHERE username = :user AND password = :pass LIMIT 1", [
+            'user' => $username,
             'pass' => $password_hashed
         ]);
 
         if ($ortu) {
             // LOGIN BERHASIL: Buat Session Khusus Wali Murid
             
-            // Kita bedakan nama variabel session agar tidak bertabrakan dengan admin/guru
             $_SESSION['ortu_id'] = $ortu['id_ortu'];
-            $_SESSION['ortu_nik'] = $ortu['nik_ortu'];
+            $_SESSION['ortu_username'] = $ortu['username']; // Ubah nama session
             
-            // Prioritaskan Nama Ayah. Jika kosong, pakai Nama Ibu. Jika kosong lagi, tulis "Wali Murid".
-            $nama_panggilan = !empty($ortu['nama_ayah']) ? $ortu['nama_ayah'] : (!empty($ortu['nama_ibu']) ? $ortu['nama_ibu'] : 'Wali Murid');
-            $_SESSION['nama_user'] = $nama_panggilan;
+            // Ambil langsung dari kolom nama_wali sesuai struktur DB baru
+            $_SESSION['nama_user'] = !empty($ortu['nama_wali']) ? $ortu['nama_wali'] : 'Wali Murid';
             
             // Tanda pengenal akses portal
             $_SESSION['role'] = 'Ortu'; 
             
             // LOGIKA REMEMBER ME (Simpan di Cookie Browser selama 30 Hari)
             if ($remember_me) {
-                // Simpan NIK dan Password raw ke cookie agar bisa di-load otomatis di form
-                setcookie('saved_ortu_nik', $nik, time() + (86400 * 30), "/"); 
+                // Simpan Username dan Password raw ke cookie agar bisa di-load otomatis di form
+                setcookie('saved_ortu_username', $username, time() + (86400 * 30), "/"); 
                 setcookie('saved_ortu_pass', $password_raw, time() + (86400 * 30), "/");
             } else {
                 // Jika tidak dicentang, hapus Cookie yang mungkin pernah tersimpan sebelumnya
-                setcookie('saved_ortu_nik', '', time() - 3600, "/");
+                setcookie('saved_ortu_username', '', time() - 3600, "/");
                 setcookie('saved_ortu_pass', '', time() - 3600, "/");
             }
 
@@ -57,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
             
         } else {
-            // LOGIN GAGAL: NIK atau Password salah
-            $_SESSION['error_message'] = "❌ NIK atau Password tidak sesuai.";
+            // LOGIN GAGAL: Username atau Password salah
+            $_SESSION['error_message'] = "❌ Username atau Password tidak sesuai.";
             header("Location: ../login.php");
             exit;
         }

@@ -10,8 +10,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'Ortu') {
 $error = $_SESSION['error_message'] ?? '';
 unset($_SESSION['error_message']);
 
-// [BARU] Cek apakah ada data login yang tersimpan di Cookie browser
-$saved_nik = $_COOKIE['saved_ortu_nik'] ?? '';
+// [BARU] Cek apakah ada data login yang tersimpan di Cookie browser (Diubah jadi username)
+$saved_username = $_COOKIE['saved_ortu_username'] ?? '';
 $saved_pass = $_COOKIE['saved_ortu_pass'] ?? '';
 ?>
 <!DOCTYPE html>
@@ -55,12 +55,12 @@ $saved_pass = $_COOKIE['saved_ortu_pass'] ?? '';
             <form action="actions/login_ortu_process.php" method="POST" class="space-y-5">
                 
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-600 mb-2 uppercase tracking-wider">NIK / No. Identitas Terdaftar</label>
+                    <label class="block text-xs font-extrabold text-slate-600 mb-2 uppercase tracking-wider">Username Akun Wali Murid</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         </div>
-                        <input type="text" name="nik" required placeholder="Masukkan NIK Anda..." value="<?= htmlspecialchars($saved_nik) ?>"
+                        <input type="text" name="username" required placeholder="Masukkan Username Anda..." value="<?= htmlspecialchars($saved_username) ?>"
                             class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#000080]/20 focus:border-[#000080] text-sm font-semibold text-slate-800 transition-all">
                     </div>
                 </div>
@@ -81,8 +81,8 @@ $saved_pass = $_COOKIE['saved_ortu_pass'] ?? '';
                 </div>
 
                 <div class="flex items-center space-x-2 pt-1">
-                    <input type="checkbox" name="remember_me" id="remember" class="w-4 h-4 rounded border-slate-300 text-[#000080] focus:ring-[#000080]" <?= $saved_nik ? 'checked' : '' ?>>
-                    <label for="remember" class="text-xs text-slate-500 font-medium cursor-pointer hover:text-slate-700 transition-colors">Ingat NIK dan Password saya</label>
+                    <input type="checkbox" name="remember_me" id="remember" class="w-4 h-4 rounded border-slate-300 text-[#000080] focus:ring-[#000080]" <?= $saved_username ? 'checked' : '' ?>>
+                    <label for="remember" class="text-xs text-slate-500 font-medium cursor-pointer hover:text-slate-700 transition-colors">Ingat Username dan Password saya</label>
                 </div>
 
                 <div class="pt-2">
@@ -96,7 +96,7 @@ $saved_pass = $_COOKIE['saved_ortu_pass'] ?? '';
 
             <div class="mt-8 p-4 bg-blue-50/50 border border-blue-100 rounded-xl text-center">
                 <p class="text-xs text-blue-800 font-medium leading-relaxed">
-                    Gunakan <span class="font-bold">NIK</span> yang didaftarkan ke sekolah.<br>
+                    Gunakan <span class="font-bold">Username</span> yang diberikan oleh sekolah.<br>
                     Password Default: <span class="font-bold bg-white px-1.5 py-0.5 rounded shadow-sm">123456</span>
                 </p>
             </div>

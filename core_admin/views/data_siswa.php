@@ -2,7 +2,7 @@
 /**
  * SITAPSI - Data Siswa (UI ALIGNED WITH GLOBAL PORTAL)
  * [FIXED]: XSS Vulnerability pada tombol Edit & Hapus
- * [PENYESUAIAN BARU]: Relasi id_ortu dengan Dropdown TomSelect
+ * [PENYESUAIAN BARU]: Relasi id_ortu dengan Dropdown TomSelect (Penyesuaian Username & Nama Wali)
  */
 
 session_start();
@@ -21,10 +21,10 @@ $tahun_aktif = fetchOne("
 
 $kelas_list = fetchAll("SELECT id_kelas, nama_kelas FROM tb_kelas ORDER BY tingkat, nama_kelas");
 
-// AMBIL DATA ORANG TUA UNTUK DROPDOWN
-$ortu_list = fetchAll("SELECT id_ortu, nik_ortu, nama_ayah, nama_ibu FROM tb_orang_tua ORDER BY nama_ayah ASC");
+// [PENYESUAIAN] AMBIL DATA ORANG TUA UNTUK DROPDOWN (Ganti NIK jadi Username & Nama Wali)
+$ortu_list = fetchAll("SELECT id_ortu, username, nama_wali, nama_ayah, nama_ibu FROM tb_orang_tua ORDER BY nama_wali ASC");
 
-// [PENYESUAIAN] Tambah JOIN ke tb_orang_tua untuk memanggil NIK ortu
+// [PENYESUAIAN] Tambah JOIN ke tb_orang_tua untuk memanggil Username & Nama Wali ortu
 $sql = "
     SELECT 
         s.no_induk,
@@ -34,7 +34,8 @@ $sql = "
         s.nama_ibu,
         s.no_hp_ortu,
         s.id_ortu,
-        o.nik_ortu,
+        o.username,
+        o.nama_wali,
         s.status_aktif,
         k.nama_kelas,
         k.id_kelas,
@@ -233,7 +234,7 @@ $card_class = "bg-white border border-[#E2E8F0] rounded-xl shadow-sm";
                                 </td>
                                 <td class="p-4 text-center">
                                     <?php if(!empty($siswa['id_ortu'])): ?>
-                                        <span class="inline-flex flex-col items-center px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200" title="Terhubung dengan NIK: <?= htmlspecialchars($siswa['nik_ortu']) ?>">
+                                        <span class="inline-flex flex-col items-center px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200" title="Terhubung Akun: <?= htmlspecialchars($siswa['username']) ?> (<?= htmlspecialchars($siswa['nama_wali']) ?>)">
                                             <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                                             <span class="text-[9px] font-extrabold uppercase">Terkait</span>
                                         </span>
@@ -252,7 +253,6 @@ $card_class = "bg-white border border-[#E2E8F0] rounded-xl shadow-sm";
                                 </td>
                                 <td class="p-4 text-center">
                                     <?php 
-                                        // [KEAMANAN XSS & DOM BREAK FIX] Ditambah data id_ortu
                                         $edit_data = json_encode([
                                             "no_induk" => $siswa["no_induk"],
                                             "id_anggota" => $siswa["id_anggota"],
@@ -263,7 +263,7 @@ $card_class = "bg-white border border-[#E2E8F0] rounded-xl shadow-sm";
                                             "nama_ibu" => $siswa["nama_ibu"] ?? "",
                                             "no_hp_ortu" => $siswa["no_hp_ortu"] ?? "",
                                             "id_kelas" => $siswa["id_kelas"],
-                                            "id_ortu" => $siswa["id_ortu"] // <--- BARU
+                                            "id_ortu" => $siswa["id_ortu"]
                                         ]);
                                         $safe_edit_data = htmlspecialchars($edit_data, ENT_QUOTES, 'UTF-8');
                                         
@@ -308,7 +308,7 @@ $card_class = "bg-white border border-[#E2E8F0] rounded-xl shadow-sm";
             <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-lg">
                 <p class="text-xs text-blue-800 leading-relaxed font-medium">
                     Format Kolom Excel yang dibutuhkan:<br>
-                    <span class="font-mono text-slate-600 mt-1 block">No Induk | Nama | JK | Tempat Lahir | Tgl Lahir | Alamat | Nama Ayah | Nama Ibu | No HP | NIK Orang Tua | Kelas</span>
+                    <span class="font-mono text-slate-600 mt-1 block">No Induk | Nama | JK | Tempat Lahir | Tgl Lahir | Alamat | Nama Ayah | Nama Ibu | No HP | Username Wali | Kelas</span>
                 </p>
             </div>
             <div class="flex gap-3 pt-2">
@@ -360,10 +360,10 @@ $card_class = "bg-white border border-[#E2E8F0] rounded-xl shadow-sm";
                         
                         <div class="mb-4">
                             <label class="<?= $label_class ?>">Hubungkan dengan Akun Orang Tua (Opsional)</label>
-                            <select name="id_ortu" id="select-ortu-tambah" placeholder="Cari NIK atau Nama Ayah/Ibu...">
+                            <select name="id_ortu" id="select-ortu-tambah" placeholder="Cari Username atau Nama Wali...">
                                 <option value="">-- Tidak Dihubungkan / Belum Terdaftar --</option>
                                 <?php foreach($ortu_list as $o): ?>
-                                    <option value="<?= $o['id_ortu'] ?>"><?= $o['nik_ortu'] ?> - Ayah: <?= htmlspecialchars($o['nama_ayah']) ?> | Ibu: <?= htmlspecialchars($o['nama_ibu']) ?></option>
+                                    <option value="<?= $o['id_ortu'] ?>">@<?= htmlspecialchars($o['username']) ?> - <?= htmlspecialchars($o['nama_wali']) ?> (Ayah: <?= htmlspecialchars($o['nama_ayah'] ?: '-') ?> | Ibu: <?= htmlspecialchars($o['nama_ibu'] ?: '-') ?>)</option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -446,10 +446,10 @@ $card_class = "bg-white border border-[#E2E8F0] rounded-xl shadow-sm";
                         
                         <div class="mb-4">
                             <label class="<?= $label_class ?>">Akun Login Orang Tua Terhubung</label>
-                            <select name="id_ortu" id="select-ortu-edit" placeholder="Cari NIK atau Nama Ayah/Ibu...">
+                            <select name="id_ortu" id="select-ortu-edit" placeholder="Cari Username atau Nama Wali...">
                                 <option value="">-- Belum Terhubung (Kosong) --</option>
                                 <?php foreach($ortu_list as $o): ?>
-                                    <option value="<?= $o['id_ortu'] ?>"><?= $o['nik_ortu'] ?> - Ayah: <?= htmlspecialchars($o['nama_ayah']) ?> | Ibu: <?= htmlspecialchars($o['nama_ibu']) ?></option>
+                                    <option value="<?= $o['id_ortu'] ?>">@<?= htmlspecialchars($o['username']) ?> - <?= htmlspecialchars($o['nama_wali']) ?> (Ayah: <?= htmlspecialchars($o['nama_ayah'] ?: '-') ?> | Ibu: <?= htmlspecialchars($o['nama_ibu'] ?: '-') ?>)</option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

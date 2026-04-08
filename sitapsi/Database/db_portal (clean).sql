@@ -364,10 +364,6 @@ INSERT INTO tb_predikat_nilai (id_kategori, huruf_mutu, batas_bawah, batas_atas,
 INSERT INTO tb_admin (username, password, nama_lengkap, role) VALUES 
 ('admin', 'admin123', 'Super Admin Tatib', 'SuperAdmin');
 
--- Insert Data Tahun 
-INSERT INTO tb_tahun_ajaran (nama_tahun, status, semester_aktif) VALUES 
-('2025/2026', 'Aktif', 'Ganjil');
-
 -- INSERT KELAS
 INSERT INTO tb_kelas (nama_kelas, tingkat) VALUES ('VII A', 7), ('VII B', 7), ('VII C', 7), ('VII D', 7), ('VII E', 7), ('VIII A', 8), ('VIII B', 8), ('VIII C', 8), ('VIII D', 8), ('VIII E', 8), ('IX A', 9), ('IX B', 9), ('IX C', 9), ('IX D', 9), ('IX E', 9);
 
@@ -400,28 +396,3 @@ INSERT INTO tb_guru (nama_guru, nip, kode_guru, id_kelas, pin_validasi) VALUES
 ('Albertus Bayu Seto, S.Pd', '10026', '26', NULL, '123456'),
 ('Brigita Natalia Setyaningrum, S.Pd.', '10027', '27', NULL, '123456'),
 ('Amelia Rangel Da Silva, S.Pd', '10028', '28', NULL, '123456');
-
--- ================================================================
--- DUMMY DATA: UJI COBA RELASI ORANG TUA & ANAK
--- ================================================================
-
--- 1. INSERT DATA ORANG TUA (WALI MURID)
--- Password diset ke MD5 dari '123456' (e10adc3949ba59abbe56e057f20f883e)
-INSERT INTO tb_orang_tua (id_ortu, username, password, nama_wali, nama_ayah, nama_ibu, no_hp_ortu, alamat) VALUES
-(1, 'budi1', 'e10adc3949ba59abbe56e057f20f883e', 'Budi Santoso', 'Budi Santoso', 'Siti Aminah', '08111111111', 'Jl. Merdeka No. 10, Malang'),
-(2, 'ratna2', 'e10adc3949ba59abbe56e057f20f883e', 'Ratna Sari', 'Hendrik Setiawan', 'Ratna Sari', '08222222222', 'Jl. Pahlawan No. 45, Malang');
-
--- 2. INSERT DATA SISWA
--- Memasukkan 3 siswa. Andi dan Siska adalah anak dari Budi Santoso (id_ortu = 1). Bima adalah anak dari Ratna (id_ortu = 2).
-INSERT INTO tb_siswa (no_induk, nama_siswa, jenis_kelamin, nama_ayah, nama_ibu, no_hp_ortu, id_ortu, status_aktif) VALUES
-('2025001', 'Andi Santoso', 'L', 'Budi Santoso', 'Siti Aminah', '08111111111', 1, 'Aktif'),
-('2023055', 'Siska Santoso', 'P', 'Budi Santoso', 'Siti Aminah', '08111111111', 1, 'Aktif'),
-('2024030', 'Bima Setiawan', 'L', 'Hendrik Setiawan', 'Ratna Sari', '08222222222', 2, 'Aktif');
-
--- 3. MENGHUBUNGKAN SISWA KE KELAS TAHUN INI (tb_anggota_kelas)
--- Asumsi id_tahun = 1 (Tahun Ajaran 2025/2026 yang sudah kita insert sebelumnya)
--- Asumsi id_kelas = 1 (VII A), 11 (IX A), dan 6 (VIII A)
-INSERT INTO tb_anggota_kelas (no_induk, id_kelas, id_tahun, no_urut) VALUES
-('2025001', 1, 1, 1),  -- Andi masuk kelas VII A (Absen 1)
-('2023055', 11, 1, 5), -- Siska masuk kelas IX A (Absen 5)
-('2024030', 6, 1, 10); -- Bima masuk kelas VIII A (Absen 10)

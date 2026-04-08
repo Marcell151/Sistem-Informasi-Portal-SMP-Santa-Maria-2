@@ -1,4 +1,9 @@
 <?php
+/**
+ * SITAPSI - Edit Siswa
+ * PENYESUAIAN: Update id_ortu untuk relasi ke akun Wali Murid
+ */
+
 session_start();
 require_once '../../config/database.php';
 require_once '../includes/session_check.php';
@@ -19,20 +24,19 @@ try {
     $jenis_kelamin = $_POST['jenis_kelamin'];
     $status_aktif = $_POST['status_aktif'];
     
-    // Split nama_ortu menjadi ayah dan ibu
     $nama_ayah = trim($_POST['nama_ayah'] ?? '');
     $nama_ibu = trim($_POST['nama_ibu'] ?? '');
     $no_hp_ortu = trim($_POST['no_hp_ortu'] ?? '');
     $id_kelas_baru = $_POST['id_kelas'] ?? null;
     
-    // [PENYESUAIAN] Tangkap lemparan id_ortu dari TomSelect
+    // Tangkap lemparan id_ortu dari Form/TomSelect
     $id_ortu = !empty($_POST['id_ortu']) ? $_POST['id_ortu'] : null;
     
     if (empty($no_induk) || empty($nama_siswa)) {
         throw new Exception('Data wajib belum lengkap');
     }
     
-    // 1. Update data siswa (Ditambahkan id_ortu)
+    // 1. Update data siswa
     executeQuery("
         UPDATE tb_siswa 
         SET nama_siswa = :nama_siswa,
@@ -58,42 +62,39 @@ try {
     if (!empty($id_kelas_baru)) {
         $tahun_aktif = fetchOne("SELECT id_tahun FROM tb_tahun_ajaran WHERE status = 'Aktif' LIMIT 1");
         
-        // Cek apakah siswa sudah ada di tabel anggota_kelas pada tahun aktif ini
-        $anggota = fetchOne("
-            SELECT id_anggota FROM tb_anggota_kelas 
-            WHERE no_induk = :no_induk AND id_tahun = :id_tahun
-        ", [
-            'no_induk' => $no_induk,
-            'id_tahun' => $tahun_aktif['id_tahun']
-        ]);
-        
-        if ($anggota) {
-            // Update kelas di anggota_kelas
-            executeQuery("
-                UPDATE tb_anggota_kelas 
-                SET id_kelas = :id_kelas
-                WHERE no_induk = :no_induk 
-                AND id_tahun = :id_tahun
+        if ($tahun_aktif) {
+            $anggota = fetchOne("
+                SELECT id_anggota FROM tb_anggota_kelas 
+                WHERE no_induk = :no_induk AND id_tahun = :id_tahun
             ", [
-                'id_kelas' => $id_kelas_baru,
                 'no_induk' => $no_induk,
                 'id_tahun' => $tahun_aktif['id_tahun']
             ]);
-        } else {
-            // Insert baru di anggota_kelas (siswa belum masuk ke rombel tahun ini)
-            executeQuery("
-                INSERT INTO tb_anggota_kelas (no_induk, id_kelas, id_tahun)
-                VALUES (:no_induk, :id_kelas, :id_tahun)
-            ", [
-                'no_induk' => $no_induk,
-                'id_kelas' => $id_kelas_baru,
-                'id_tahun' => $tahun_aktif['id_tahun']
-            ]);
+            
+            if ($anggota) {
+                executeQuery("
+                    UPDATE tb_anggota_kelas 
+                    SET id_kelas = :id_kelas
+                    WHERE no_induk = :no_induk AND id_tahun = :id_tahun
+                ", [
+                    'id_kelas' => $id_kelas_baru,
+                    'no_induk' => $no_induk,
+                    'id_tahun' => $tahun_aktif['id_tahun']
+                ]);
+            } else {
+                executeQuery("
+                    INSERT INTO tb_anggota_kelas (no_induk, id_kelas, id_tahun)
+                    VALUES (:no_induk, :id_kelas, :id_tahun)
+                ", [
+                    'no_induk' => $no_induk,
+                    'id_kelas' => $id_kelas_baru,
+                    'id_tahun' => $tahun_aktif['id_tahun']
+                ]);
+            }
         }
     }
     
     $pdo->commit();
-    
     $_SESSION['success_message'] = "✅ Data siswa $nama_siswa berhasil diupdate!";
     
 } catch (Exception $e) {

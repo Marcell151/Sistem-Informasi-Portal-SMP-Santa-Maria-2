@@ -6,7 +6,7 @@ require_once '../includes/session_check.php';
 requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nik = trim($_POST['nik_ortu']);
+    $nama_wali = trim($_POST['nama_wali']); // Menggantikan NIK
     $nama_ayah = trim($_POST['nama_ayah']);
     $pekerjaan_ayah = trim($_POST['pekerjaan_ayah']);
     $nama_ibu = trim($_POST['nama_ibu']);
@@ -14,27 +14,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $no_hp = trim($_POST['no_hp_ortu']);
     $alamat = trim($_POST['alamat']);
 
-    if (empty($nik) || empty($nama_ayah) || empty($nama_ibu)) {
-        $_SESSION['error_message'] = "Data wajib belum lengkap!";
+    if (empty($nama_wali) || empty($no_hp)) {
+        $_SESSION['error_message'] = "Data Nama Wali dan No HP wajib diisi!";
         header("Location: ../views/data_ortu.php");
         exit;
     }
 
     try {
-        // Cek duplikasi NIK
-        $cek = fetchOne("SELECT id_ortu FROM tb_orang_tua WHERE nik_ortu = ?", [$nik]);
+        // Cek duplikasi No HP (karena NIK dihapus, No HP jadi acuan unik)
+        $cek = fetchOne("SELECT id_ortu FROM tb_orang_tua WHERE no_hp_ortu = ?", [$no_hp]);
         if ($cek) {
-            throw new Exception("NIK tersebut sudah terdaftar di sistem!");
+            throw new Exception("Nomor HP tersebut sudah terdaftar di sistem!");
         }
 
         $pass_default = md5('123456');
 
+        // Insert data awal tanpa username (karena username butuh ID)
         executeQuery("
-            INSERT INTO tb_orang_tua (nik_ortu, password, nama_ayah, pekerjaan_ayah, nama_ibu, pekerjaan_ibu, no_hp_ortu, alamat)
+            INSERT INTO tb_orang_tua (password, nama_wali, nama_ayah, pekerjaan_ayah, nama_ibu, pekerjaan_ibu, no_hp_ortu, alamat)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ", [$nik, $pass_default, $nama_ayah, $pekerjaan_ayah, $nama_ibu, $pekerjaan_ibu, $no_hp, $alamat]);
+        ", [$pass_default, $nama_wali, $nama_ayah, $pekerjaan_ayah, $nama_ibu, $pekerjaan_ibu, $no_hp, $alamat]);
 
-        $_SESSION['success_message'] = "✅ Data Wali Murid berhasil ditambahkan. Sandi default: 123456";
+        // Ambil ID yang baru saja masuk berdasarkan No HP yang unik tadi
+        $data_baru = fetchOne("SELECT id_ortu FROM tb_orang_tua WHERE no_hp_ortu = ?", [$no_hp]);
+        $id_baru = $data_baru['id_ortu'];
+
+        // LOGIKA BIKIN USERNAME OTOMATIS (Nama depan + ID)
+        $kata_pertama = explode(' ', trim($nama_wali))[0];
+        $kata_pertama = strtolower($kata_pertama);
+        $nama_bersih = preg_replace('/[^a-z]/', '', $kata_pertama); 
+        if(empty($nama_bersih)) $nama_bersih = 'ortu'; // Jaga-jaga jika inputannya aneh
+        
+        $username_baru = $nama_bersih . $id_baru;
+
+        // Update row dengan username yang sudah dibuat
+        executeQuery("UPDATE tb_orang_tua SET username = ? WHERE id_ortu = ?", [$username_baru, $id_baru]);
+
+        $_SESSION['success_message'] = "✅ Wali Murid berhasil ditambah! USERNAME LOGIN: " . $username_baru . " (Sandi: 123456)";
 
     } catch (Exception $e) {
         $_SESSION['error_message'] = "❌ Gagal: " . $e->getMessage();
