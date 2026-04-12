@@ -11,8 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($login_type === 'admin') {
             // PROSES LOGIN ADMIN
             $username = trim($_POST['username']);
-            
-            // HAPUS md5() KARENA DI DATABASE DISIMPAN SEBAGAI TEKS BIASA ('admin123')
             $password = $_POST['password']; 
 
             $admin = fetchOne("SELECT * FROM tb_admin WHERE username = :user AND password = :pass", [
@@ -23,12 +21,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($admin) {
                 // 1. Session untuk Portal Utama
                 $_SESSION['user_id'] = $admin['id_admin'];
-                $_SESSION['nama_lengkap'] = $admin['nama_lengkap']; // Di DB namanya nama_lengkap
-                $_SESSION['role'] = 'Admin';
+                $_SESSION['nama_lengkap'] = $admin['nama_lengkap'];
+                
+                // DISESUAIKAN: Mengambil role langsung dari DB (Admin / AdminTatib)
+                $_SESSION['role'] = $admin['role']; 
                 
                 // 2. Session "Jembatan" agar SITAPSI lama tidak error
                 $_SESSION['username'] = $admin['username'];
                 $_SESSION['login_type'] = 'admin';
+                $_SESSION['login_time'] = time(); // Tambahkan ini untuk sinkron dengan session_check
 
                 if ($remember_me) {
                     setcookie('saved_admin_user', $username, time() + (86400 * 30), "/");
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
         } elseif ($login_type === 'guru') {
-            // PROSES LOGIN GURU (Dropdown + PIN)
+            // PROSES LOGIN GURU
             $id_guru = $_POST['id_guru'];
             $pin = $_POST['pin_validasi'];
 
@@ -55,14 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             if ($guru) {
-                // 1. Session untuk Portal Utama
                 $_SESSION['user_id'] = $guru['id_guru'];
                 $_SESSION['nama_lengkap'] = $guru['nama_guru'];
                 $_SESSION['role'] = 'Guru';
                 
-                // 2. Session "Jembatan" agar SITAPSI lama tidak error
                 $_SESSION['username'] = $guru['nama_guru'];
                 $_SESSION['login_type'] = 'guru';
+                $_SESSION['login_time'] = time();
 
                 if ($remember_me) {
                     setcookie('saved_guru_id', $id_guru, time() + (86400 * 30), "/");

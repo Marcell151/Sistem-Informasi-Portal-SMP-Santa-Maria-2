@@ -7,7 +7,7 @@ session_start();
 require_once '../../config/database.php';
 require_once '../includes/session_check.php';
 
-requireAdmin();
+requireSuperAdmin();
 
 $tahun_aktif = fetchOne("
     SELECT id_tahun, nama_tahun 

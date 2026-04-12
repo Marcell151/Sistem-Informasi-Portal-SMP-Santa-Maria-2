@@ -8,7 +8,7 @@ session_start();
 require_once '../../config/database.php';
 require_once '../includes/session_check.php';
 
-requireAdmin();
+requireSuperAdmin();
 
 // Ambil daftar kelas
 $kelas_list = fetchAll("SELECT * FROM tb_kelas ORDER BY tingkat, nama_kelas");

@@ -9,7 +9,7 @@ session_start();
 require_once '../../config/database.php';
 require_once '../includes/session_check.php';
 
-requireAdmin();
+requireSuperAdmin();
 
 $tahun_aktif = fetchOne("SELECT id_tahun, nama_tahun, semester_aktif FROM tb_tahun_ajaran WHERE status = 'Aktif' LIMIT 1");
 $cek_transaksi = fetchOne("SELECT COUNT(*) as total FROM tb_pelanggaran_header WHERE id_tahun = :id_tahun", ['id_tahun' => $tahun_aktif['id_tahun']]);

@@ -8,6 +8,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
 
 // Data user untuk footer sidebar
 $user_name = $_SESSION['nama_lengkap'] ?? 'Administrator';
+$user_role = $_SESSION['role'] ?? ''; // Ambil role dari session
 $initial = strtoupper(substr($user_name, 0, 1));
 
 // Helper untuk CSS Class menu aktif
@@ -51,41 +52,43 @@ function getNavClass($isActive) {
 
     <nav class="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-hide">
         
-        <div class="pt-2 pb-1">
-            <p class="px-4 text-[10px] font-bold tracking-wider text-slate-400 uppercase">Manajemen Pengguna</p>
-        </div>
-
-        <a href="data_siswa.php" class="<?= getNavClass($current_page === 'data_siswa') ?>">
-            <div class="flex items-center gap-3">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                Data Siswa
+        <?php if ($user_role === 'SuperAdmin'): ?>
+            <div class="pt-2 pb-1">
+                <p class="px-4 text-[10px] font-bold tracking-wider text-slate-400 uppercase">Manajemen Pengguna</p>
             </div>
-        </a>
 
-        <a href="data_ortu.php" class="<?= getNavClass($current_page === 'data_ortu') ?>">
-            <div class="flex items-center gap-3">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                Data Wali Murid
+            <a href="data_siswa.php" class="<?= getNavClass($current_page === 'data_siswa') ?>">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Data Siswa
+                </div>
+            </a>
+
+            <a href="data_ortu.php" class="<?= getNavClass($current_page === 'data_ortu') ?>">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Data Wali Murid
+                </div>
+            </a>
+
+            <a href="data_guru.php" class="<?= getNavClass($current_page === 'data_guru') ?>">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                    Data Guru
+                </div>
+            </a>
+
+            <div class="pt-4 pb-1">
+                <p class="px-4 text-[10px] font-bold tracking-wider text-slate-400 uppercase">Sistem Akademik</p>
             </div>
-        </a>
 
-        <a href="data_guru.php" class="<?= getNavClass($current_page === 'data_guru') ?>">
-            <div class="flex items-center gap-3">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                Data Guru
-            </div>
-        </a>
-
-        <div class="pt-4 pb-1">
-            <p class="px-4 text-[10px] font-bold tracking-wider text-slate-400 uppercase">Sistem Akademik</p>
-        </div>
-
-        <a href="pengaturan_akademik.php" class="<?= getNavClass(in_array($current_page, ['pengaturan_akademik', 'kenaikan_kelas'])) ?>">
-            <div class="flex items-center gap-3">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                Pengaturan Akademik
-            </div>
-        </a>
+            <a href="pengaturan_akademik.php" class="<?= getNavClass(in_array($current_page, ['pengaturan_akademik', 'kenaikan_kelas'])) ?>">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    Pengaturan Akademik
+                </div>
+            </a>
+        <?php endif; ?>
 
         <div class="pt-4 pb-1">
             <p class="px-4 text-[10px] font-bold tracking-wider text-slate-400 uppercase">Pusat Data Lampau</p>
@@ -107,7 +110,9 @@ function getNavClass($isActive) {
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-bold text-slate-800 truncate"><?= htmlspecialchars($user_name) ?></p>
-                <p class="text-[10px] font-medium text-slate-500 uppercase">Core Admin</p>
+                <p class="text-[10px] font-medium text-slate-500 uppercase">
+                    <?= ($user_role === 'AdminTatib') ? 'Tim Kedisiplinan' : 'Core Admin' ?>
+                </p>
             </div>
         </div>
 

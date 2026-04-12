@@ -8,8 +8,7 @@ session_start();
 require_once '../../config/database.php';
 require_once '../includes/session_check.php';
 
-requireAdmin();
-
+requireSuperAdmin();
 $id_kelas_asal = $_GET['kelas_asal'] ?? null;
 
 if (!$id_kelas_asal) {

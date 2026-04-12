@@ -205,12 +205,9 @@ if (!empty($list_siswa_bermasalah)) {
         <div class="p-6 max-w-7xl mx-auto space-y-6 pb-20">
             
             <div class="bg-white p-2 rounded-xl border border-[#E2E8F0] shadow-sm flex overflow-x-auto scrollbar-hide space-x-2">
-                <a href="?tahun=<?= $id_tahun ?>&tab=lab" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'lab' ? 'bg-purple-600 text-white' : 'text-slate-500 hover:bg-slate-100' ?>">1. Inv. Lab</a>
-                <a href="?tahun=<?= $id_tahun ?>&tab=nonlab" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'nonlab' ? 'bg-pink-600 text-white' : 'text-slate-500 hover:bg-slate-100' ?>">2. Inv. Non-Lab</a>
-                <a href="?tahun=<?= $id_tahun ?>&tab=absen" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'absen' ? 'bg-emerald-600 text-white' : 'text-slate-500 hover:bg-slate-100' ?>">3. E-Absensi</a>
-                <a href="?tahun=<?= $id_tahun ?>&tab=ekstra" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'ekstra' ? 'bg-amber-500 text-white' : 'text-slate-500 hover:bg-slate-100' ?>">4. Ekstrakurikuler</a>
-                <a href="?tahun=<?= $id_tahun ?>&tab=tatib" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'tatib' ? 'bg-[#000080] text-white' : 'text-slate-500 hover:bg-slate-100' ?>">5. SITAPSI (Tatib)</a>
-                <a href="?tahun=<?= $id_tahun ?>&tab=perpus" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'perpus' ? 'bg-teal-600 text-white' : 'text-slate-500 hover:bg-slate-100' ?>">6. Perpustakaan</a>
+                <a href="?tahun=<?= $id_tahun ?>&tab=absen" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'absen' ? 'bg-emerald-600 text-white' : 'text-slate-500 hover:bg-slate-100' ?>">1. E-Absensi</a>
+                <a href="?tahun=<?= $id_tahun ?>&tab=ekstra" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'ekstra' ? 'bg-amber-500 text-white' : 'text-slate-500 hover:bg-slate-100' ?>">2. Ekstrakurikuler</a>
+                <a href="?tahun=<?= $id_tahun ?>&tab=tatib" class="px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors <?= $tab_aktif === 'tatib' ? 'bg-[#000080] text-white' : 'text-slate-500 hover:bg-slate-100' ?>">3. SITAPSI (Tatib)</a>
             </div>
 
             <?php if ($tab_aktif === 'tatib'): ?>

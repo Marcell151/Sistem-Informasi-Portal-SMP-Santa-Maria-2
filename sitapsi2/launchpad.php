@@ -1,8 +1,7 @@
 <?php
 /**
  * PORTAL TERPADU - App Launchpad (SSO)
- * Lokasi: C:\xampp\htdocs\portal_sekolah\launchpad.php
- * FIXED: Masalah penamaan folder untuk SuperAdmin agar diarahkan ke folder 'admin'
+ * Penyesuaian: Role SuperAdmin (TU) & Admin (Tatib)
  */
 session_start();
 
@@ -11,33 +10,25 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
     exit; 
 }
 
-// 1. PANGGIL KONFIGURASI PDO ANDA
 require_once 'config/database.php'; 
 
 $nama_user = $_SESSION['nama_lengkap'];
 $role = $_SESSION['role'];
 
 // --- LOGIKA PENENTUAN FOLDER & FILE TUJUAN ---
-// Jika SuperAdmin atau Admin, arahkan ke folder 'admin' dan file 'dashboard.php'
-// Jika Guru, arahkan ke folder 'guru' dan file 'input_pelanggaran.php'
-$folder_tujuan = ($role === 'SuperAdmin' || $role === 'Admin') ? 'admin' : strtolower($role);
-$file_tujuan   = ($role === 'SuperAdmin' || $role === 'Admin') ? 'dashboard' : 'input_pelanggaran';
+// Karena SuperAdmin dan Admin sama-sama menggunakan folder 'admin' di modul SITAPSI
+$folder_tujuan = (in_array($role, ['SuperAdmin', 'Admin'])) ? 'admin' : strtolower($role);
+$file_tujuan   = (in_array($role, ['SuperAdmin', 'Admin'])) ? 'dashboard' : 'input_pelanggaran';
 // ---------------------------------------------
 
-// ==========================================
-// 2. PENGECEKAN SETUP AWAL (TAHUN AJARAN)
-// Menggunakan fungsi fetchOne() dari database.php
-// ==========================================
 $cek_ta = fetchOne("SELECT id_tahun FROM tb_tahun_ajaran WHERE status = 'Aktif'");
 
-// Jika tidak ada data yang kembali (KOSONG)
 if (!$cek_ta) {
-    if ($role === 'SuperAdmin' || $role === 'Admin') {
-        // Paksa Admin ke halaman Setup
+    // Hanya role 'SuperAdmin' (TU) yang boleh melakukan setup awal
+    if ($role === 'SuperAdmin') {
         header("Location: core_admin/views/setup_tahun_ajaran.php");
         exit;
     } else {
-        // Blokir Guru
         ?>
         <!DOCTYPE html>
         <html lang="id">
@@ -55,7 +46,7 @@ if (!$cek_ta) {
                     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800 mb-2">Sistem Belum Dikonfigurasi</h2>
-                <p class="text-slate-500 mb-8">Mohon maaf, Portal Terpadu saat ini belum memiliki Tahun Ajaran yang aktif. Silakan hubungi <b>Admin Pusat</b> untuk melakukan konfigurasi awal.</p>
+                <p class="text-slate-500 mb-8">Mohon maaf, Portal Terpadu saat ini belum memiliki Tahun Ajaran yang aktif. Silakan hubungi <b>Bagian Tata Usaha (SuperAdmin)</b> untuk melakukan konfigurasi awal.</p>
                 <a href="logout.php" class="inline-block bg-slate-800 text-white font-bold py-3 px-6 rounded-xl hover:bg-slate-900 transition-colors w-full">Keluar dari Portal</a>
             </div>
         </body>
@@ -64,7 +55,6 @@ if (!$cek_ta) {
         exit;
     }
 }
-// ==========================================
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -85,7 +75,7 @@ if (!$cek_ta) {
                     <img src="sitapsi/assets/img/logo.png" alt="Logo Santa Maria" class="w-full h-full object-contain">
                 </div>
                 <span class="font-extrabold text-slate-800 tracking-tight">Portal Terpadu</span>
-                <span class="ml-2 px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-500 rounded text-[10px] font-bold uppercase hidden sm:inline">Hak Akses: <?= $role ?></span>
+                <span class="ml-2 px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-500 rounded text-[10px] font-bold uppercase hidden sm:inline">Hak Akses: <?= ($role === 'Admin') ? 'Tim Tatib' : $role ?></span>
             </div>
             <a href="logout.php" onclick="return confirm('Keluar dari portal terpadu?')" class="flex items-center text-sm font-bold text-red-500 hover:text-red-700 bg-red-50 px-3 py-1.5 rounded-lg transition-colors">
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -100,10 +90,11 @@ if (!$cek_ta) {
             <p class="text-slate-500 font-medium">Pilih modul sistem yang ingin Anda akses hari ini.</p>
         </div>
 
-        <?php if ($role === 'Admin' || $role === 'SuperAdmin'): ?>
         <div class="max-w-4xl mx-auto mb-10">
-            <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4">Pengaturan Master (Core System)</h2>
+            <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4">Core System</h2>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                
+                <?php if ($role === 'SuperAdmin'): ?>
                 <a href="core_admin/views/data_siswa.php" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-[#000080] hover:shadow-md transition-all text-center group">
                     <div class="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-[#000080] group-hover:text-white transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
@@ -128,15 +119,19 @@ if (!$cek_ta) {
                     </div>
                     <span class="text-[11px] font-bold text-slate-700">Akademik</span>
                 </a>
-                <a href="core_admin/views/arsip_tahun.php" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all text-center group col-span-2 md:col-span-1">
+                <?php endif; ?>
+
+                <?php if ($role === 'SuperAdmin' || $role === 'Admin'): ?>
+                <a href="core_admin/views/arsip_tahun.php" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all text-center group <?= ($role === 'Admin') ? 'col-span-2 md:col-span-5' : '' ?>">
                     <div class="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-slate-700 group-hover:text-white transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg>
                     </div>
                     <span class="text-[11px] font-bold text-slate-700">Arsip Global</span>
                 </a>
+                <?php endif; ?>
+
             </div>
         </div>
-        <?php endif; ?>
 
         <div class="max-w-4xl mx-auto">
             <h2 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4">Modul Operasional</h2>
